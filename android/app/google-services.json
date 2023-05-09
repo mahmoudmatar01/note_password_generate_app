@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1067139294383",
+    "project_id": "noteapp-cfd9f",
+    "storage_bucket": "noteapp-cfd9f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1067139294383:android:70d4710f19fcaff497205a",
+        "android_client_info": {
+          "package_name": "org.Matr.note_password_generate_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1067139294383-d6fkh364bq0tg1pbn05v6hb5hmmi5ihb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCztkV9zRgxBFwy1KXyvjjBs-cX1DULbgo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1067139294383-d6fkh364bq0tg1pbn05v6hb5hmmi5ihb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
