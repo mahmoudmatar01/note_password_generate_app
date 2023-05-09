@@ -16,8 +16,9 @@ class NotesDataBase {
   Future initialDb() async {
     String dataPath = await getDatabasesPath();
     String path = join(dataPath, 'NotesDB.db');
-    Future<Database> notesDb =
-        openDatabase(path, onCreate: _onCreate, onUpgrade: _onUpgrade);
+    Database? notesDb =
+        await openDatabase(path, onCreate: _onCreate, onUpgrade: _onUpgrade);
+    return notesDb;
   }
 
   _onUpgrade(Database db, int oldVersion, int newVersion) {}
@@ -28,7 +29,7 @@ class NotesDataBase {
 
   readData() async {
     Database? myDb = await db;
-    List<Map> response = await myDb!.query("NOTES");
+    List<Map<String, Object?>> response = await myDb!.query("Notes");
     return response;
   }
 

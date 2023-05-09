@@ -12,25 +12,26 @@ class _NoteScreenState extends State<NoteScreen> {
   // Attributes
   List notes = [
     {
-      "note":
+      "TITLE": "Title",
+      "NOTE":
           "Sleep Well Eat Well do exercise i will go to scchool Yeasterday by bus and i make",
-      "image": "images/logo.avif"
     },
     {
-      "note":
+      "TITLE": "Title",
+      "NOTE":
           "Sleep Well Eat Well do exercise i will go to scchool Yeasterday by bus and i make",
-      "image": "images/logo.avif"
     }
   ];
   bool isLoading = true;
 // readNotes Method
-  Future readNotes() async {
-    List<Map> response = await NotesDataBase().readData();
-    notes.addAll(response);
+  Future<List<Map<String, Object?>>> readNotes() async {
+    List<Map<String, Object?>> response = await NotesDataBase().readData();
+    // notes.addAll(response);
     isLoading = false;
-    if (mounted) {
-      setState(() {});
-    }
+    return response;
+    // if (mounted) {
+    //   setState(() {});
+    // }
   }
 
   @override
@@ -68,39 +69,49 @@ class _NoteScreenState extends State<NoteScreen> {
         ),
       ),
       body: SafeArea(
-        child: ListView.builder(
-            itemCount: notes.length,
-            itemBuilder: (context, i) {
-              return Dismissible(
-                  key: Key("${i}"),
-                  onResize: () {
-                    notes.remove(notes[i]);
-                  },
-                  child: Container(
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 7, vertical: 10),
-                    child: Row(
-                      children: [
-                        Expanded(
-                            flex: 1,
-                            child: Image.asset(
-                              "images/logo.avif",
-                              fit: BoxFit.fill,
-                            )),
-                        Expanded(
-                            flex: 3,
-                            child: ListTile(
-                              title: Text("${notes[i]['note']}"),
-                              trailing: IconButton(
-                                onPressed: () {},
-                                icon: const Icon(Icons.edit),
-                              ),
-                            ))
-                      ],
-                    ),
-                  ));
-            }),
-      ),
+          child: ListView(
+        children: [
+          FutureBuilder(
+              future: readNotes(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<Map<String, Object?>>> snapshot) {
+                return snapshot.hasData
+                    ? ListView.builder(
+                        itemCount: snapshot.data!.length,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, i) {
+                          return Dismissible(
+                              key: Key("$i"),
+                              onResize: () {
+                                notes.remove(notes[i]);
+                              },
+                              child: Card(
+                                elevation: 2,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: ListTile(
+                                  leading: Image.asset(
+                                    "images/logo.avif",
+                                    fit: BoxFit.fill,
+                                  ),
+                                  title: Text("${snapshot.data![i]['TITLE']}"),
+                                  subtitle:
+                                      Text("${snapshot.data![i]['NOTE']}"),
+                                  trailing: IconButton(
+                                    onPressed: () {},
+                                    icon: const Icon(Icons.edit),
+                                  ),
+                                ),
+                              ));
+                        })
+                    : const Center(
+                        child: Text("there is no Notes Until Now"),
+                      );
+              })
+        ],
+      )),
     );
   }
 }

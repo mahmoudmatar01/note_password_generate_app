@@ -16,8 +16,9 @@ class AccountsDataBase {
   initialDb() async {
     String dataPath = await getDatabasesPath();
     String path = join(dataPath, 'AccountsDataDB.db');
-    Database accountsDataDb =
+    Database? accountsDataDb =
         await openDatabase(path, onCreate: _onCreate, onUpgrade: _onUpgrade);
+    return accountsDataDb;
   }
 
   _onUpgrade(Database db, int oldVersion, int newVersion) {}
@@ -28,7 +29,7 @@ class AccountsDataBase {
 
   readData() async {
     Database? myDb = await db;
-    List<Map> response = await myDb!.query("ACCOUNTS DATA'");
+    List<Map<String, Object?>> response = await myDb!.query("ACCOUNTS DATA'");
     return response;
   }
 

@@ -5,12 +5,20 @@ import '../DataBase/notes_db.dart';
 import 'custom_TextFormField.dart';
 import 'custom_buttom.dart';
 
-class ModelBottomSheet extends StatelessWidget {
+class ModelBottomSheet extends StatefulWidget {
   ModelBottomSheet({Key? key}) : super(key: key);
 
-  String? noteTitle;
-  String? noteContent;
+  @override
+  State<ModelBottomSheet> createState() => _ModelBottomSheetState();
+}
+
+class _ModelBottomSheetState extends State<ModelBottomSheet> {
+  String noteTitle = "";
+
+  String noteContent = "";
+
   NotesDataBase notesDataBase = NotesDataBase();
+
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -24,22 +32,36 @@ class ModelBottomSheet extends StatelessWidget {
         const SizedBox(
           height: 25,
         ),
-        CustomTextFormFiel(
-          title: "Enter Note Title",
-          icon: const SizedBox(),
-          onChange: (val) {
-            noteTitle = val;
-          },
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        CustomTextFormFiel(
-          onChange: (val) {
-            noteContent = val;
-          },
-          title: "Enter Note Content",
-          icon: const SizedBox(),
+        Padding(
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: Form(
+            child: Column(
+              children: [
+                CustomTextFormFiel(
+                  title: "Enter Note Title",
+                  icon: const SizedBox(),
+                  onChange: (val) {
+                    setState(() {
+                      noteTitle = val;
+                    });
+                  },
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                CustomTextFormFiel(
+                  onChange: (val) {
+                    setState(() {
+                      noteContent = val;
+                    });
+                  },
+                  title: "Enter Note Content",
+                  icon: const SizedBox(),
+                ),
+              ],
+            ),
+          ),
         ),
         const SizedBox(
           height: 20,
@@ -59,7 +81,8 @@ class ModelBottomSheet extends StatelessWidget {
                   showDialog(
                       context: context,
                       builder: (_) => myAlert(
-                          content: "Some Thing Error Went", context: context));
+                          content: "Some Thing invalid Went",
+                          context: context));
                 }
               },
             ))
