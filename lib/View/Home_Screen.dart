@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:note_password_generate_app/DataBase/notes_db.dart';
 
 import 'Accounts_information.dart';
 import 'Bank_Account.dart';

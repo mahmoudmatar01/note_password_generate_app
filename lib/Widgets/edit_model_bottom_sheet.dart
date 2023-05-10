@@ -1,20 +1,30 @@
 import 'package:flutter/material.dart';
+
 import '../DataBase/notes_db.dart';
 import 'custom_TextFormField.dart';
 import 'custom_buttom.dart';
 
-class SaveModelBottomSheet extends StatefulWidget {
-  const SaveModelBottomSheet({Key? key}) : super(key: key);
+class EditModelBottomSheet extends StatefulWidget {
+  final int id;
+  final String title;
+  final String title2;
+  const EditModelBottomSheet(
+      {Key? key, required this.id, required this.title, required this.title2})
+      : super(key: key);
   @override
-  State<SaveModelBottomSheet> createState() => _SaveModelBottomSheet();
+  State<EditModelBottomSheet> createState() =>
+      _EditModelBottomSheet(id, title, title2);
 }
 
-class _SaveModelBottomSheet extends State<SaveModelBottomSheet> {
+class _EditModelBottomSheet extends State<EditModelBottomSheet> {
   String noteTitle = "";
   String noteContent = "";
+  final int id;
+  final String title;
+  final String title2;
   NotesDataBase helper = NotesDataBase();
 
-  _SaveModelBottomSheet();
+  _EditModelBottomSheet(this.id, this.title, this.title2);
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +32,7 @@ class _SaveModelBottomSheet extends State<SaveModelBottomSheet> {
       padding: const EdgeInsets.all(20),
       children: [
         const Text(
-          "Enter Note Details",
+          "Edit Note Details",
           style: TextStyle(
               fontSize: 26, fontWeight: FontWeight.w700, color: Colors.blue),
         ),
@@ -36,7 +46,7 @@ class _SaveModelBottomSheet extends State<SaveModelBottomSheet> {
             child: Column(
               children: [
                 CustomTextFormFiel(
-                  title: "Enter Note Title",
+                  title: title,
                   icon: const SizedBox(),
                   onChange: (val) {
                     setState(() {
@@ -53,7 +63,7 @@ class _SaveModelBottomSheet extends State<SaveModelBottomSheet> {
                       noteContent = val;
                     });
                   },
-                  title: "Enter Note Content",
+                  title: title2,
                   mLines: 4,
                   icon: const SizedBox(),
                 ),
@@ -67,9 +77,10 @@ class _SaveModelBottomSheet extends State<SaveModelBottomSheet> {
         SizedBox(
             height: 50,
             child: CustomButton(
-              title: "Save Note",
+              title: "Edit Note",
               onPress: () async {
-                int response = await helper.insertNote(noteTitle, noteContent);
+                int response =
+                    await helper.updateNote(noteTitle, noteContent, id);
 
                 if (response > 0) {
                   Navigator.pop(context);
