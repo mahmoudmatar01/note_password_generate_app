@@ -2,58 +2,90 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class BankDataBase {
-  static Database? _db;
+  static BankDataBase? _databaseHelper; // Singleton DatabaseHelper
+  static Database? _database; // Singleton Database
 
-  Future<Database?> get db async {
-    if (_db == null) {
-      _db = await initialDb();
-      return _db;
-    } else {
-      return _db;
-    }
+  String bankTable = 'bank_table';
+  String colId = 'id';
+  String colCardName = 'CardName';
+  String colCardNumber = 'CardNumber';
+  String colSecurityCode = 'SecurityCode';
+  String colValidThrough = 'ValidThrough';
+
+  BankDataBase._createInstance(); // Named constructor to create instance of DatabaseHelper
+
+  factory BankDataBase() {
+    _databaseHelper ??= BankDataBase._createInstance();
+    return _databaseHelper!;
   }
 
-  initialDb() async {
-    String dataPath = await getDatabasesPath();
-    String path = join(dataPath, 'BankDataDB.db');
-    Database? bankDataDb =
-        await openDatabase(path, onCreate: _onCreate, onUpgrade: _onUpgrade);
-    return bankDataDb;
+  Future<Database> get database async {
+    _database ??= await initializeDatabase();
+    return _database!;
   }
 
-  _onUpgrade(Database db, int oldVersion, int newVersion) {}
-  _onCreate(Database db, int version) async {
+  Future<Database> initializeDatabase() async {
+    // Get the directory path for both Android and iOS to store database.
+    String dbPath = await getDatabasesPath();
+    final path = join(dbPath, "BankDB.db");
+
+    // Open/create the database at a given path
+    var notesDatabase =
+        await openDatabase(path, version: 1, onCreate: _createDb);
+    return notesDatabase;
+  }
+
+  void _createDb(Database db, int newVersion) async {
     await db.execute(
-        '''CREATE TABLE "Banks DATA"("ID" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "CARD NAME" TEXT NOT NULL,"CARD NUMBER" TEXT NOT NULL ,"SECURITY CODE" TEXT NOT NULL ,"VALID THROUGH" TEXT NOT NULL) ''');
+        'CREATE TABLE $bankTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, $colCardName TEXT, '
+        '$colCardNumber TEXT,$colSecurityCode TEXT ,$colValidThrough TEXT)');
   }
 
-  readData() async {
-    Database? myDb = await db;
-    List<Map<String, Object?>> response = await myDb!.query("Banks DATA");
-    return response;
+  // Fetch Operation: Get all note objects from database
+  Future<List<Map<String, dynamic>>> getAccountData() async {
+    Database db = await database;
+    //	var result = await db.rawQuery('SELECT * FROM $noteTable order by $colPriority ASC');
+    var result = await db.query(bankTable);
+    return result;
   }
 
-  deleteData(String? myWhere) async {
-    Database? myDb = await db;
-    int response = await myDb!.delete("Banks DATA", where: myWhere);
-    return response;
+  // Insert Operation: Insert a Note object to database
+  Future<int> insertAccountData(String cardName, String cardNumber,
+      String securityCode, String validThrough) async {
+    Database db = await database;
+    var result = await db.insert(bankTable, {
+      colCardName: cardName,
+      colCardNumber: cardNumber,
+      colSecurityCode: securityCode,
+      colValidThrough: validThrough
+    });
+    return result;
   }
 
-  updateData(Map<String, dynamic> value, String? myWhere) async {
-    Database? myDb = await db;
-    int response = await myDb!.update("Banks DATA", value, where: myWhere);
-    return response;
+  // Update Operation: Update a Note object and save it to database
+  Future<int> updateAccountData(String cardName, String cardNumber,
+      String securityCode, String validThrough, int id) async {
+    var db = await database;
+    var result = await db.update(
+        bankTable,
+        {
+          colCardName: cardName,
+          colCardNumber: cardNumber,
+          colSecurityCode: securityCode,
+          colValidThrough: validThrough
+        },
+        where: '$colId = ?',
+        whereArgs: [id]);
+    // var result =  db.rawUpdate(
+    //     'UPDATE $noteTable SET $colTitle=$title , $colDescription=$note WHERE $colId=$id');
+    return result;
   }
 
-  insertData(Map<String, dynamic> value) async {
-    Database? myDb = await db;
-    int response = await myDb!.insert("Banks DATA", value);
-    return response;
-  }
-
-  _deleteDataBase() async {
-    String dataPath = await getDatabasesPath();
-    String path = join(dataPath, 'NotesDB.db');
-    await deleteDatabase(path);
+  // Delete Operation: Delete a Note object from database
+  Future<int> deleteAccountData(int id) async {
+    var db = await database;
+    int result =
+        await db.rawDelete('DELETE FROM $bankTable WHERE $colId = $id');
+    return result;
   }
 }

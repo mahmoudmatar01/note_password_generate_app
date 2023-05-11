@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:note_password_generate_app/Widgets/custom_TextFormField.dart';
 import 'package:note_password_generate_app/Widgets/custom_buttom.dart';
 
+import '../DataBase/bank_db.dart';
+import '../Widgets/edit_Account_data_model_bottom_sheet.dart';
+
 class BankAccount extends StatefulWidget {
   const BankAccount({Key? key}) : super(key: key);
 
@@ -10,6 +13,22 @@ class BankAccount extends StatefulWidget {
 }
 
 class _BankAccountState extends State<BankAccount> {
+  String cardName = "";
+  String cardNumber = "";
+  String securityCode = "";
+  String validThrough = "";
+  BankDataBase helper = BankDataBase();
+
+  List<Map> accountData = [];
+
+  Future<List<Map>> getData() async {
+    await helper.getAccountData().then((value) {
+      accountData = value;
+      setState(() {});
+    });
+    return accountData;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,34 +55,54 @@ class _BankAccountState extends State<BankAccount> {
           ),
           Form(
             child: Column(
-              children: const [
+              children: [
                 CustomTextFormFiel(
                     title: "Enter The Card Name",
-                    icon: Icon(
+                    onChange: (val) {
+                      setState(() {
+                        cardName = val;
+                      });
+                    },
+                    icon: const Icon(
                       Icons.credit_card,
                     )),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 CustomTextFormFiel(
                     title: "Card Number",
-                    icon: Icon(
+                    onChange: (val) {
+                      setState(() {
+                        cardNumber = val;
+                      });
+                    },
+                    icon: const Icon(
                       Icons.credit_card,
                     )),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 CustomTextFormFiel(
                     title: "Security Code",
-                    icon: Icon(
+                    onChange: (val) {
+                      setState(() {
+                        securityCode = val;
+                      });
+                    },
+                    icon: const Icon(
                       Icons.credit_card,
                     )),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 CustomTextFormFiel(
                     title: "Valid Through",
-                    icon: Icon(
+                    onChange: (val) {
+                      setState(() {
+                        validThrough = val;
+                      });
+                    },
+                    icon: const Icon(
                       Icons.credit_card,
                     )),
               ],
@@ -73,7 +112,19 @@ class _BankAccountState extends State<BankAccount> {
             height: 10,
           ),
           SizedBox(
-              height: 50, width: 150, child: CustomButton(title: "Save Data")),
+              height: 50,
+              width: 150,
+              child: CustomButton(
+                title: "Save Data",
+                onPress: () async {
+                  int response = await helper.insertAccountData(
+                      cardName, cardNumber, securityCode, validThrough);
+                  print("=============================");
+                  print(response);
+                  print("=============================");
+                  setState(() {});
+                },
+              )),
           const SizedBox(
             height: 20,
           ),
@@ -87,47 +138,168 @@ class _BankAccountState extends State<BankAccount> {
           const SizedBox(
             height: 15,
           ),
-          Column(
-            children: [
-              Text(
-                "Credit_Card Name : Visa",
-                style: TextStyle(
-                  fontSize: 17,
-                  color: Colors.blue[700],
-                ),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Text(
-                "Credit_Card Number : 23632847238748738",
-                style: TextStyle(
-                  fontSize: 17,
-                  color: Colors.blue[700],
-                ),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Text(
-                "Credit_Card Security Code : 123",
-                style: TextStyle(
-                  fontSize: 17,
-                  color: Colors.blue[700],
-                ),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Text(
-                "Credit_Card Valid Through : 12/2025",
-                style: TextStyle(
-                  fontSize: 17,
-                  color: Colors.blue[700],
-                ),
-              ),
-            ],
-          )
+          FutureBuilder(
+              future: getData(),
+              builder:
+                  (BuildContext context, AsyncSnapshot<List<Map>> snapshot) {
+                return !snapshot.hasData
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                        color: Colors.blue,
+                      ))
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15)),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 15),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Credit Card Name : ${snapshot.data![index]['CardName']}",
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      color: Colors.blue[700],
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  Text(
+                                    "Credit Card Number : ${snapshot.data![index]['CardNumber']}",
+                                    style: TextStyle(
+                                      color: Colors.blue[700],
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  Text(
+                                    "Credit_Card Security Code : ${snapshot.data![index]['SecurityCode']}",
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      color: Colors.blue[700],
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  Text(
+                                    "Credit_Card Valid Through : ${snapshot.data![index]['ValidThrough']}",
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      color: Colors.blue[700],
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      TextButton(
+                                          onPressed: () {
+                                            showModalBottomSheet(
+                                                shape:
+                                                    const RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.only(
+                                                                topLeft: Radius
+                                                                    .circular(
+                                                                        25),
+                                                                topRight: Radius
+                                                                    .circular(
+                                                                        25))),
+                                                context: (context),
+                                                builder: (_) {
+                                                  return EditAccountDataModelBottom(
+                                                    Card_Name:
+                                                        snapshot.data![index]
+                                                            ['CardName'],
+                                                    Card_Number:
+                                                        snapshot.data![index]
+                                                            ['CardNumber'],
+                                                    id: snapshot.data![index]
+                                                        ['id'],
+                                                    Security_Number:
+                                                        snapshot.data![index]
+                                                            ['SecurityCode'],
+                                                    Valid_Through:
+                                                        snapshot.data![index]
+                                                            ['ValidThrough'],
+                                                  );
+                                                });
+                                          },
+                                          child: const Text(
+                                            "Edit Data",
+                                            style: TextStyle(
+                                                color: Colors.black54,
+                                                fontWeight: FontWeight.w600),
+                                          )),
+                                      TextButton(
+                                          onPressed: () {
+                                            showDialog(
+                                                context: (context),
+                                                builder: (_) {
+                                                  return AlertDialog(
+                                                    content: const Text(
+                                                        "Are you Sure To Delete Account Data"),
+                                                    title: const Text(
+                                                        "Remove Account Data"),
+                                                    actions: [
+                                                      TextButton(
+                                                          onPressed: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          child: const Text(
+                                                              "Cancel")),
+                                                      TextButton(
+                                                          onPressed: () async {
+                                                            int response = await helper
+                                                                .deleteAccountData(
+                                                                    snapshot.data![
+                                                                            index]
+                                                                        ['id']);
+                                                            print(
+                                                                "==============================");
+                                                            print(response);
+                                                            print(
+                                                                "==============================");
+                                                            if (response > 0) {
+                                                              Navigator.pop(
+                                                                  context);
+                                                              setState(() {});
+                                                            }
+                                                          },
+                                                          child: const Text(
+                                                              "Sure"))
+                                                    ],
+                                                  );
+                                                });
+                                          },
+                                          child: const Text(
+                                            "Remove Data",
+                                            style: TextStyle(
+                                                color: Colors.red,
+                                                fontWeight: FontWeight.w600),
+                                          )),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        });
+              })
         ],
       ),
     );
