@@ -3,7 +3,7 @@ import 'package:note_password_generate_app/Widgets/custom_TextFormField.dart';
 import 'package:note_password_generate_app/Widgets/custom_buttom.dart';
 
 import '../DataBase/bank_db.dart';
-import '../Widgets/edit_Account_data_model_bottom_sheet.dart';
+import '../Widgets/edit_bank_data_model_bottom_sheet.dart';
 
 class BankAccount extends StatefulWidget {
   const BankAccount({Key? key}) : super(key: key);
@@ -19,14 +19,14 @@ class _BankAccountState extends State<BankAccount> {
   String validThrough = "";
   BankDataBase helper = BankDataBase();
 
-  List<Map> accountData = [];
+  List<Map> banksDataList = [];
 
   Future<List<Map>> getData() async {
     await helper.getAccountData().then((value) {
-      accountData = value;
+      banksDataList = value;
       setState(() {});
     });
-    return accountData;
+    return banksDataList;
   }
 
   @override
@@ -220,7 +220,7 @@ class _BankAccountState extends State<BankAccount> {
                                                                         25))),
                                                 context: (context),
                                                 builder: (_) {
-                                                  return EditAccountDataModelBottom(
+                                                  return EditBankDataModelBottom(
                                                     Card_Name:
                                                         snapshot.data![index]
                                                             ['CardName'],
@@ -251,9 +251,9 @@ class _BankAccountState extends State<BankAccount> {
                                                 builder: (_) {
                                                   return AlertDialog(
                                                     content: const Text(
-                                                        "Are you Sure To Delete Account Data"),
+                                                        "Are you Sure To Delete Bank Account Data"),
                                                     title: const Text(
-                                                        "Remove Account Data"),
+                                                        "Remove Bank Data"),
                                                     actions: [
                                                       TextButton(
                                                           onPressed: () {

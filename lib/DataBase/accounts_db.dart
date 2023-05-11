@@ -42,7 +42,7 @@ class AccountsDataBase {
   }
 
   // Fetch Operation: Get all note objects from database
-  Future<List<Map<String, dynamic>>> getNoteMapList() async {
+  Future<List<Map<String, dynamic>>> getAccountsData() async {
     Database db = await database;
     //	var result = await db.rawQuery('SELECT * FROM $noteTable order by $colPriority ASC');
     var result = await db.query(accountsTable);
@@ -50,8 +50,8 @@ class AccountsDataBase {
   }
 
   // Insert Operation: Insert a Note object to database
-  Future<int> insertNote(String platformName, String fullName, String email,
-      String password) async {
+  Future<int> insertAccountData(String platformName, String fullName,
+      String email, String password) async {
     Database db = await database;
     var result = await db.insert(accountsTable, {
       colPlatformName: platformName,
@@ -63,8 +63,8 @@ class AccountsDataBase {
   }
 
   // Update Operation: Update a Note object and save it to database
-  Future<int> updateNote(String platformName, String fullName, String email,
-      String password, int id) async {
+  Future<int> updateAccountsData(String platformName, String fullName,
+      String email, String password, int id) async {
     var db = await database;
     var result = await db.update(
         accountsTable,
@@ -82,7 +82,7 @@ class AccountsDataBase {
   }
 
   // Delete Operation: Delete a Note object from database
-  Future<int> deleteNote(int id) async {
+  Future<int> deleteAccountsData(int id) async {
     var db = await database;
     int result =
         await db.rawDelete('DELETE FROM $accountsTable WHERE $colId = $id');
