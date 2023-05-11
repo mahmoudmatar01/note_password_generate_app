@@ -64,7 +64,6 @@ class _EditModelBottomSheet extends State<EditModelBottomSheet> {
                     });
                   },
                   title: title2,
-                  mLines: 4,
                   icon: const SizedBox(),
                 ),
               ],
@@ -81,10 +80,9 @@ class _EditModelBottomSheet extends State<EditModelBottomSheet> {
               onPress: () async {
                 int response =
                     await helper.updateNote(noteTitle, noteContent, id);
-
+                setState(() {});
                 if (response > 0) {
                   Navigator.pop(context);
-                  setState(() {});
                 }
                 print("==================================");
                 print(response);

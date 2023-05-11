@@ -11,24 +11,15 @@ class NoteScreen extends StatefulWidget {
 
 class _NoteScreenState extends State<NoteScreen> {
   // Attributes
-  // List<Map> notes = [
-  //   {"id": 0, "title": "Hello", "description": "Hello!World"}
-  // ];
-  // bool isLoading = true;
+  List<Map> notes = [];
   NotesDataBase helper = NotesDataBase();
 
-  // Future<List<Map>> getNotes() async {
-  //   await helper.getNoteMapList().then((value) {
-  //     notes.addAll(value);
-  //     setState(() {});
-  //   });
-  //   return notes;
-  // }
-
-  @override
-  void initState() {
-    helper.getNoteMapList();
-    super.initState();
+  Future<List<Map>> getNotes() async {
+    await helper.getNoteMapList().then((value) {
+      notes = value;
+      setState(() {});
+    });
+    return notes;
   }
 
   @override
@@ -60,7 +51,7 @@ class _NoteScreenState extends State<NoteScreen> {
           ),
         ),
         body: FutureBuilder(
-          future: helper.getNoteMapList(),
+          future: getNotes(),
           builder: (BuildContext context, AsyncSnapshot<List<Map>> snapshot) {
             return !snapshot.hasData
                 ? const Center(

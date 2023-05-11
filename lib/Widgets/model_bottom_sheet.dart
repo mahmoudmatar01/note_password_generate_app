@@ -54,7 +54,6 @@ class _SaveModelBottomSheet extends State<SaveModelBottomSheet> {
                     });
                   },
                   title: "Enter Note Content",
-                  mLines: 4,
                   icon: const SizedBox(),
                 ),
               ],
@@ -70,10 +69,9 @@ class _SaveModelBottomSheet extends State<SaveModelBottomSheet> {
               title: "Save Note",
               onPress: () async {
                 int response = await helper.insertNote(noteTitle, noteContent);
-
+                setState(() {});
                 if (response > 0) {
                   Navigator.pop(context);
-                  setState(() {});
                 }
                 print("==================================");
                 print(response);

@@ -6,8 +6,9 @@ import '../Widgets/custom_buttom.dart';
 class SignUp extends StatelessWidget {
   String? email;
   String? password;
+  final BaseAuthController baseAuthHelper;
 
-  SignUp({super.key});
+  SignUp({super.key, required this.baseAuthHelper});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,7 +116,7 @@ class SignUp extends StatelessWidget {
           ),
           CustomButton(
             onPress: () async {
-              await AuthController().registerAuth(
+              await baseAuthHelper.registerAuth(
                   password: password!, email: email!, context: context);
               // Navigator.of(context).pushReplacement(
               //     MaterialPageRoute(builder: (context) => const HomeScreen()));

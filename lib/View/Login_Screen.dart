@@ -7,8 +7,9 @@ import 'SignUp.dart';
 class LoginPage extends StatelessWidget {
   String? email;
   String? password;
+  final BaseAuthController baseAuthHelper;
 
-  LoginPage({super.key});
+  LoginPage({super.key, required this.baseAuthHelper});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,8 +68,10 @@ class LoginPage extends StatelessWidget {
                 const Text("If You haven't An Account "),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => SignUp()));
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => SignUp(
+                              baseAuthHelper: AuthController(),
+                            )));
                   },
                   child: const Text(
                     "Click here",
@@ -79,7 +82,7 @@ class LoginPage extends StatelessWidget {
             ),
             CustomButton(
               onPress: () async {
-                await AuthController().loginAuth(
+                await baseAuthHelper.loginAuth(
                     context: context, email: email!, password: password!);
                 // Navigator.of(context).pushReplacement(MaterialPageRoute(
                 //     builder: (context) => const HomeScreen()));
