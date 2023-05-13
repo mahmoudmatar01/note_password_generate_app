@@ -1,14 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:note_password_generate_app/Controller/Auth_Controller.dart';
+import 'package:note_password_generate_app/DataBase/register_db.dart';
+import '../Widgets/My_Alert.dart';
 import '../Widgets/custom_TextFormField.dart';
 import '../Widgets/custom_buttom.dart';
+import 'Home_Screen.dart';
 
-class SignUp extends StatelessWidget {
-  String? email;
-  String? password;
-  final BaseAuthController baseAuthHelper;
+class SignUp extends StatefulWidget {
+  SignUp({
+    super.key,
+  });
 
-  SignUp({super.key, required this.baseAuthHelper});
+  @override
+  State<SignUp> createState() => _SignUpState();
+}
+
+class _SignUpState extends State<SignUp> {
+  String email = "";
+
+  String password = "";
+
+  String firstName = "";
+
+  String lastName = "";
+
+  RegisterDataBase helper = RegisterDataBase();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,19 +70,29 @@ class SignUp extends StatelessWidget {
             height: 20,
           ),
           Row(
-            children: const [
+            children: [
               Expanded(
                   child: CustomTextFormFiel(
+                onChange: (val) {
+                  setState(() {
+                    firstName = val;
+                  });
+                },
                 title: "First Name",
-                icon: Icon(Icons.person, color: Colors.black54),
+                icon: const Icon(Icons.person, color: Colors.black54),
               )),
-              SizedBox(
+              const SizedBox(
                 width: 5,
               ),
               Expanded(
                   child: CustomTextFormFiel(
+                onChange: (val) {
+                  setState(() {
+                    lastName = val;
+                  });
+                },
                 title: "Last Name",
-                icon: Icon(
+                icon: const Icon(
                   Icons.person,
                   color: Colors.black54,
                 ),
@@ -78,7 +104,9 @@ class SignUp extends StatelessWidget {
           ),
           CustomTextFormFiel(
             onChange: (val) {
-              email = val;
+              setState(() {
+                email = val;
+              });
             },
             title: "Email",
             icon: const Icon(
@@ -91,7 +119,9 @@ class SignUp extends StatelessWidget {
           ),
           CustomTextFormFiel(
             onChange: (val) {
-              password = val;
+              setState(() {
+                password = val;
+              });
             },
             title: "Password",
             obscure: true,
@@ -116,10 +146,22 @@ class SignUp extends StatelessWidget {
           ),
           CustomButton(
             onPress: () async {
-              await baseAuthHelper.registerAuth(
-                  password: password!, email: email!, context: context);
-              // Navigator.of(context).pushReplacement(
-              //     MaterialPageRoute(builder: (context) => const HomeScreen()));
+              int response = await helper.insertAccountData(
+                  email, password, firstName, lastName);
+              print("+++++++++++++++++++++++++++++++++");
+              print(response);
+              print("+++++++++++++++++++++++++++++++++");
+              if (response > 0) {
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => const HomeScreen()));
+              } else {
+                showDialog(
+                    context: (context),
+                    builder: (_) {
+                      return myAlert(
+                          context: context, content: "something invalid went");
+                    });
+              }
             },
             title: "Sign Up",
           ),

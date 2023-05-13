@@ -1,15 +1,25 @@
 import 'package:flutter/material.dart';
-import '../Controller/Auth_Controller.dart';
+import '../DataBase/register_db.dart';
+import '../Widgets/My_Alert.dart';
 import '../Widgets/custom_TextFormField.dart';
 import '../Widgets/custom_buttom.dart';
+import 'Home_Screen.dart';
 import 'SignUp.dart';
 
-class LoginPage extends StatelessWidget {
-  String? email;
-  String? password;
-  final BaseAuthController baseAuthHelper;
+class LoginPage extends StatefulWidget {
+  LoginPage({super.key});
 
-  LoginPage({super.key, required this.baseAuthHelper});
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  String email = "";
+
+  String password = "";
+
+  RegisterDataBase helper = RegisterDataBase();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +51,9 @@ class LoginPage extends StatelessWidget {
             ),
             CustomTextFormFiel(
               onChange: (val) {
-                email = val;
+                setState(() {
+                  email = val;
+                });
               },
               title: "Email",
               icon: const Icon(
@@ -54,7 +66,9 @@ class LoginPage extends StatelessWidget {
             ),
             CustomTextFormFiel(
               onChange: (val) {
-                password = val;
+                setState(() {
+                  password = val;
+                });
               },
               obscure: true,
               title: "Password",
@@ -68,10 +82,8 @@ class LoginPage extends StatelessWidget {
                 const Text("If You haven't An Account "),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => SignUp(
-                              baseAuthHelper: AuthController(),
-                            )));
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => SignUp()));
                   },
                   child: const Text(
                     "Click here",
@@ -82,10 +94,47 @@ class LoginPage extends StatelessWidget {
             ),
             CustomButton(
               onPress: () async {
-                await baseAuthHelper.loginAuth(
-                    context: context, email: email!, password: password!);
-                // Navigator.of(context).pushReplacement(MaterialPageRoute(
-                //     builder: (context) => const HomeScreen()));
+                // await widget.baseAuthHelper.loginAuth(
+                //     context: context, email: email!, password: password!);
+
+                try {
+                  var response = await helper.getAccountData(email, password);
+                  print("+++++++++++++++++++++++++++++++++");
+                  print(response);
+                  print("+++++++++++++++++++++++++++++++++");
+                  if (response.isNotEmpty) {
+                    if (response[0]['Password'] == password) {
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => const HomeScreen()));
+                    } else {
+                      showDialog(
+                          context: (context),
+                          builder: (_) {
+                            return myAlert(
+                                context: context, content: "invalid Password");
+                          });
+                    }
+                  } else {
+                    showDialog(
+                        context: (context),
+                        builder: (_) {
+                          return myAlert(
+                              context: context,
+                              content: "something invalid went");
+                        });
+                  }
+                } catch (e) {
+                  print("+++++++++++++++++++++++++");
+                  print(e);
+                  print("++++++++++++++++++++++++++");
+                  showDialog(
+                      context: (context),
+                      builder: (_) {
+                        return myAlert(
+                            context: context,
+                            content: "something invalid went");
+                      });
+                }
               },
               title: "Login",
             ),
