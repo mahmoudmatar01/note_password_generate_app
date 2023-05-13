@@ -134,7 +134,6 @@ class NotesDataBase {
   // Fetch Operation: Get all note objects from database
   Future<List<Map<String, dynamic>>> getNoteMapList() async {
     Database db = await database;
-    //	var result = await db.rawQuery('SELECT * FROM $noteTable order by $colPriority ASC');
     var result = await db.query(noteTable);
     return result;
   }
@@ -153,8 +152,6 @@ class NotesDataBase {
     var result = await db.update(
         noteTable, {"title": title, "description": note},
         where: '$colId = ?', whereArgs: [id]);
-    // var result =  db.rawUpdate(
-    //     'UPDATE $noteTable SET $colTitle=$title , $colDescription=$note WHERE $colId=$id');
     return result;
   }
 
